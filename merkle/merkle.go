@@ -25,6 +25,7 @@ func Root(digests []digest.Digest) (digest.Digest, error) {
 	}
 	round := 0
 	for len(digestBytes) > 1 {
+		round = 0
 		var next [][]byte
 	Loop:
 		for {
