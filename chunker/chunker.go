@@ -7,8 +7,6 @@ import (
 )
 
 type Rabin struct {
-	reader  io.Reader
-	hash    hash.Hash
 	chunker *chunker.Chunker
 }
 
@@ -19,8 +17,6 @@ func NewRabin(r io.Reader, h hash.Hash, avgBlkSize uint64) *Rabin {
 	poly, _ := chunker.RandomPolynomial()
 	c := chunker.New(r, poly, h, avgBlkSize, min, max)
 	return &Rabin{
-		r,
-		h,
 		c,
 	}
 }
@@ -30,5 +26,5 @@ func (r *Rabin) NextChunk() (*BasicChunk, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &BasicChunk{chunk}, nil
+	return &BasicChunk{chunk: chunk}, nil
 }

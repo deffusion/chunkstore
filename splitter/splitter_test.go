@@ -2,6 +2,8 @@ package splitter
 
 import (
 	"fmt"
+	"github.com/deffusion/chunkstore/digest/digest_hash"
+	"github.com/deffusion/chunkstore/merkle"
 	"log"
 	"os"
 	"os/user"
@@ -14,9 +16,16 @@ func TestSplitter(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if SplitIntoFiles(file) != nil {
-		fmt.Println("split err:", err)
+	digests, err := SplitIntoFiles(file, digest_hash.SHA256)
+	if err != nil {
+		log.Fatal("split err:", err)
 	}
+	fmt.Println(digests)
+	root, err := merkle.Root(digests)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("root:", root)
 }
 
 func TestUserDir(t *testing.T) {
