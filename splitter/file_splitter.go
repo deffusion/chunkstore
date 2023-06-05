@@ -5,11 +5,11 @@ import (
 	"github.com/deffusion/chunkstore/chunker"
 	"github.com/deffusion/chunkstore/digest"
 	"github.com/deffusion/chunkstore/digest/digest_hash"
+	"github.com/deffusion/chunkstore/store"
 	"hash/fnv"
 	"io"
 	"log"
 	"os"
-	"os/user"
 )
 
 const (
@@ -17,16 +17,6 @@ const (
 	M         = K * K
 	ChunkSize = 1 * M
 )
-
-var storeRoot string
-
-func init() {
-	currentUser, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-	storeRoot = fmt.Sprintf("%s/store/", currentUser.HomeDir)
-}
 
 func SplitIntoFiles(r *os.File, h digest_hash.Hash) ([]digest.Digest, error) {
 	rc := chunker.NewRabin(r, fnv.New32(), ChunkSize)
@@ -43,7 +33,7 @@ func SplitIntoFiles(r *os.File, h digest_hash.Hash) ([]digest.Digest, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		cFile, err := os.Create(fmt.Sprintf("%s/%s", storeRoot, d))
+		cFile, err := os.Create(fmt.Sprintf("%s/%s", store.ChunkRoot, d))
 		if err != nil {
 			log.Fatal(err)
 		}
