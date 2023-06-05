@@ -33,6 +33,8 @@ func New(val interface{}) (d Digest, err error) {
 func (d Digest) String() string {
 	return d.str
 }
+
+// Bytes returns without the hash function prefix
 func (d Digest) Bytes() (bytes []byte) {
 	bytes, _ = hex.DecodeString(d.str[2:])
 	return

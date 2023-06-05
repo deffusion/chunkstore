@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/deffusion/chunkstore/digest/digest_hash"
 	"github.com/deffusion/chunkstore/merkle"
+	"github.com/deffusion/chunkstore/store"
 	"log"
 	"os"
 	"os/user"
@@ -16,7 +17,7 @@ func TestSplitter(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	digests, err := SplitIntoFiles(file, digest_hash.SHA256)
+	digests, err := SplitIntoFiles(store.ChunkRoot, file, digest_hash.SHA256)
 	if err != nil {
 		log.Fatal("split err:", err)
 	}

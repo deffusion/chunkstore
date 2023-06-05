@@ -11,11 +11,11 @@ type MemoryKV struct {
 	db map[string][]byte
 }
 
-func New() (kv.KV, error) {
+func New() kv.KV {
 	store := &MemoryKV{
 		make(map[string][]byte),
 	}
-	return store, nil
+	return store
 }
 
 func (m MemoryKV) closed() bool {
