@@ -8,6 +8,7 @@ import (
 	"github.com/deffusion/chunkstore/splitter"
 	"github.com/deffusion/chunkstore/store/kv"
 	"go.uber.org/zap"
+	"io"
 	"os"
 )
 
@@ -22,7 +23,7 @@ func New(db kv.KV, chunkRoot string) *ChunkStore {
 	return &ChunkStore{
 		db,
 		chunkRoot,
-		logger,
+		logger.Named("ChunkStore"),
 	}
 }
 
@@ -76,4 +77,24 @@ func (cs *ChunkStore) Add(file *os.File) digest.Digest {
 		return digest.Null
 	}
 	return root
+}
+
+func (cs *ChunkStore) Extract(d digest.Digest, path string) {
+	logger := cs.logger.Named("Extract")
+	file, err := os.Create(path)
+	defer file.Close()
+	if err != nil {
+		logger.Fatal(err.Error())
+	} else {
+		logger.Info(fmt.Sprint("create file:", path))
+	}
+	digests := cs.Get(d)
+	for _, di := range digests {
+		chunkFile, err := os.Open(fmt.Sprint(ChunkRoot, di.String()))
+		n, err := io.Copy(file, chunkFile)
+		chunkFile.Close()
+		if err != nil && err != io.EOF {
+			logger.Fatal(fmt.Sprintf("Chunkstore.Extract: %d bytes were wrote\n%s", n, err))
+		}
+	}
 }
