@@ -31,22 +31,25 @@ func (cs *ChunkStore) Close() error {
 	return cs.db.Close()
 }
 
-// get
+// Get returns digest of chunks of the given file digest
 func (cs *ChunkStore) Get(d digest.Digest) []digest.Digest {
-	errPrefix := "ChunkStore.Get: "
+	logger := cs.logger.Named("Get")
+
 	data, err := cs.db.Get([]byte(d.String()))
 	if err != nil {
-		cs.logger.Error(fmt.Sprint(errPrefix, err))
+		logger.Error(err.Error())
 		return nil
 	}
+
 	dl, err := digest.DecodeList(data)
 	if err != nil {
-		cs.logger.Error(fmt.Sprint(errPrefix, err))
+		logger.Error(err.Error())
 		return nil
 	}
+
 	digests, err := dl.Digests()
 	if err != nil {
-		cs.logger.Error(fmt.Sprint(errPrefix, err))
+		logger.Error(err.Error())
 		return nil
 	}
 	return digests
@@ -54,33 +57,39 @@ func (cs *ChunkStore) Get(d digest.Digest) []digest.Digest {
 
 // Add the file in the given path into chunkstore
 func (cs *ChunkStore) Add(file *os.File) digest.Digest {
-	errPrefix := "ChunkStore.Add: "
+	logger := cs.logger.Named("Add")
+
 	digests, err := splitter.SplitIntoFiles(ChunkRoot, file, digest_hash.SHA256)
 	if err != nil {
-		cs.logger.Error(fmt.Sprint(errPrefix, err))
+		logger.Error(err.Error())
 		return digest.Null
 	}
+
 	root, err := merkle.Root(digests)
 	if err != nil {
-		cs.logger.Error(fmt.Sprint(errPrefix, err))
+		logger.Error(err.Error())
 		return digest.Null
 	}
+
 	dl := digest.ListFromDigests(digests)
 	data, err := digest.EncodeList(dl)
 	if err != nil {
-		cs.logger.Error(fmt.Sprint(errPrefix, err))
+		logger.Error(err.Error())
 		return digest.Null
 	}
+
 	err = cs.db.Put([]byte(root.String()), data)
 	if err != nil {
-		cs.logger.Error(fmt.Sprint(errPrefix, err))
+		logger.Error(err.Error())
 		return digest.Null
 	}
+
 	return root
 }
 
 func (cs *ChunkStore) Extract(d digest.Digest, path string) {
 	logger := cs.logger.Named("Extract")
+
 	file, err := os.Create(path)
 	defer file.Close()
 	if err != nil {
@@ -88,6 +97,7 @@ func (cs *ChunkStore) Extract(d digest.Digest, path string) {
 	} else {
 		logger.Info(fmt.Sprint("create file:", path))
 	}
+
 	digests := cs.Get(d)
 	for _, di := range digests {
 		chunkFile, err := os.Open(fmt.Sprint(ChunkRoot, di.String()))
