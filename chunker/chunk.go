@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/deffusion/chunkstore/digest"
 	"github.com/deffusion/chunkstore/digest/digest_hash"
-	"github.com/whyrusleeping/chunker"
+	"github.com/jotfs/fastcdc-go"
 )
 
 type BasicChunk struct {
-	chunk  *chunker.Chunk
+	chunk  *fastcdc.Chunk
 	digest digest.Digest
 }
 
@@ -18,9 +18,9 @@ func (c *BasicChunk) Data() []byte {
 }
 
 // ChunkDigest returns digest of the chunker used
-func (c *BasicChunk) ChunkDigest() []byte {
-	return c.chunk.Digest
-}
+//func (c *BasicChunk) ChunkDigest() []byte {
+//	return c.chunk.Digest
+//}
 
 // Digest returns digest hashed by given hash function
 func (c *BasicChunk) Digest(dh digest_hash.Hash) (digest.Digest, error) {

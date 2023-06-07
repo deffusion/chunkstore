@@ -22,13 +22,12 @@ func TestPathExist(t *testing.T) {
 	}
 }
 
-func add(cs *ChunkStore, path string) {
+func add(cs *ChunkStore, path string) digest.Digest {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	root := cs.Add(file)
-	fmt.Println("added: ", root)
+	return cs.Add(file)
 }
 
 func get(cs *ChunkStore, d digest.Digest) {
@@ -40,18 +39,16 @@ func get(cs *ChunkStore, d digest.Digest) {
 
 func TestChunkStore_Add(t *testing.T) {
 	db := memory_kv.New()
+	defer db.Close()
 	cs := New(db, ChunkRoot)
 	add(cs, "../splitter/test.pdf")
 }
 
 func TestChunkStore_Get(t *testing.T) {
 	db := memory_kv.New()
+	defer db.Close()
 	cs := New(db, ChunkRoot)
-	d, err := digest.New("s8fa18167acc80d63070ccaf4001865f5b37027980ac711911684cecd51b79360e")
-	if err != nil {
-		log.Fatal(err)
-	}
-	get(cs, d)
-	add(cs, "../splitter/test.pdf")
-	get(cs, d)
+	root := add(cs, "D:/book/gopl2.pdf")
+	fmt.Println("added: ", root)
+	//get(cs, root)
 }

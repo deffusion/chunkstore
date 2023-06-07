@@ -1,21 +1,22 @@
 package chunker
 
 import (
-	"github.com/whyrusleeping/chunker"
+	"github.com/jotfs/fastcdc-go"
 	"hash"
 	"io"
 )
 
 type Rabin struct {
-	chunker *chunker.Chunker
+	chunker *fastcdc.Chunker
 }
 
-func NewRabin(r io.Reader, h hash.Hash, avgBlkSize uint64) *Rabin {
-	min := avgBlkSize / 3
-	max := avgBlkSize + (avgBlkSize / 2)
-
-	poly, _ := chunker.RandomPolynomial()
-	c := chunker.New(r, poly, h, avgBlkSize, min, max)
+func NewRabin(r io.Reader, h hash.Hash, avgBlkSize int) *Rabin {
+	opts := fastcdc.Options{
+		MinSize:     avgBlkSize / 4,
+		AverageSize: avgBlkSize,
+		MaxSize:     avgBlkSize * 4,
+	}
+	c, _ := fastcdc.NewChunker(r, opts)
 	return &Rabin{
 		c,
 	}
@@ -26,5 +27,5 @@ func (r *Rabin) NextChunk() (*BasicChunk, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &BasicChunk{chunk: chunk}, nil
+	return &BasicChunk{chunk: &chunk}, nil
 }

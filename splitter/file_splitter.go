@@ -14,11 +14,11 @@ import (
 const (
 	K         = 1024
 	M         = K * K
-	ChunkSize = 1 * M
+	ChunkSize = 256 * K
 )
 
 func SplitIntoFiles(rootPath string, r io.Reader, h digest_hash.Hash) ([]digest.Digest, error) {
-	rc := chunker.NewRabin(r, fnv.New32(), ChunkSize)
+	rc := chunker.NewRabin(r, fnv.New64(), ChunkSize)
 	var digests []digest.Digest
 	for {
 		chunk, err := rc.NextChunk()
