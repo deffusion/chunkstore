@@ -5,7 +5,6 @@ import (
 	"github.com/deffusion/chunkstore/cmd/flags"
 	"github.com/deffusion/chunkstore/digest"
 	"github.com/deffusion/chunkstore/store"
-	"github.com/deffusion/chunkstore/store/kv/level_kv"
 	"github.com/urfave/cli/v2"
 	"io"
 	"log"
@@ -23,11 +22,6 @@ var Extract = &cli.Command{
 		if err != nil {
 			log.Fatal("cmd.Get: ", err)
 		}
-		db, err := level_kv.New(store.KVRoot)
-		defer db.Close()
-		if err != nil {
-			log.Fatal("cmd.Get: ", err)
-		}
 		path := cCtx.String("path")
 		file, err := os.Create(path)
 		defer file.Close()
@@ -36,7 +30,7 @@ var Extract = &cli.Command{
 		} else {
 			fmt.Println("create file:", path)
 		}
-		cs := store.New(db, store.ChunkRoot)
+		cs := cCtx.App.Metadata["chunkstore"].(*store.ChunkStore)
 		digests := cs.Get(d)
 		for _, di := range digests {
 			chunkFile, err := os.Open(fmt.Sprint(store.ChunkRoot, di.String()))

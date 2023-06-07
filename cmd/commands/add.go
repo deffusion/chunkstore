@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"github.com/deffusion/chunkstore/store"
-	"github.com/deffusion/chunkstore/store/kv/level_kv"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -18,12 +17,7 @@ var Add = &cli.Command{
 		if err != nil {
 			log.Fatal("cmd.Add: ", err)
 		}
-		db, err := level_kv.New(store.KVRoot)
-		defer db.Close()
-		if err != nil {
-			log.Fatal("cmd.Add: ", err)
-		}
-		cs := store.New(db, store.ChunkRoot)
+		cs := cCtx.App.Metadata["chunkstore"].(*store.ChunkStore)
 		root := cs.Add(file)
 		fmt.Println("file hash:", root)
 		return nil

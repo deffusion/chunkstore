@@ -2,7 +2,6 @@ package chunker
 
 import (
 	"github.com/jotfs/fastcdc-go"
-	"hash"
 	"io"
 )
 
@@ -10,7 +9,7 @@ type Rabin struct {
 	chunker *fastcdc.Chunker
 }
 
-func NewRabin(r io.Reader, h hash.Hash, avgBlkSize int) *Rabin {
+func NewRabin(r io.Reader, avgBlkSize int) *Rabin {
 	opts := fastcdc.Options{
 		MinSize:     avgBlkSize / 4,
 		AverageSize: avgBlkSize,

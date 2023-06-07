@@ -5,7 +5,6 @@ import (
 	"github.com/deffusion/chunkstore/chunker"
 	"github.com/deffusion/chunkstore/digest"
 	"github.com/deffusion/chunkstore/digest/digest_hash"
-	"hash/fnv"
 	"io"
 	"log"
 	"os"
@@ -18,7 +17,7 @@ const (
 )
 
 func SplitIntoFiles(rootPath string, r io.Reader, h digest_hash.Hash) ([]digest.Digest, error) {
-	rc := chunker.NewRabin(r, fnv.New64(), ChunkSize)
+	rc := chunker.NewRabin(r, ChunkSize)
 	var digests []digest.Digest
 	for {
 		chunk, err := rc.NextChunk()
