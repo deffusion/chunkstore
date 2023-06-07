@@ -1,14 +1,11 @@
 package commands
 
 import (
-	"fmt"
 	"github.com/deffusion/chunkstore/cmd/flags"
 	"github.com/deffusion/chunkstore/digest"
 	"github.com/deffusion/chunkstore/store"
 	"github.com/urfave/cli/v2"
-	"io"
 	"log"
-	"os"
 )
 
 var Extract = &cli.Command{
@@ -23,24 +20,8 @@ var Extract = &cli.Command{
 			log.Fatal("cmd.Get: ", err)
 		}
 		path := cCtx.String("path")
-		file, err := os.Create(path)
-		defer file.Close()
-		if err != nil {
-			log.Fatal(err)
-		} else {
-			fmt.Println("create file:", path)
-		}
 		cs := cCtx.App.Metadata["chunkstore"].(*store.ChunkStore)
-		digests := cs.Get(d)
-		for _, di := range digests {
-			chunkFile, err := os.Open(fmt.Sprint(store.ChunkRoot, di.String()))
-			n, err := io.Copy(file, chunkFile)
-			chunkFile.Close()
-			if err != nil && err != io.EOF {
-				fmt.Println(err)
-				log.Fatal(n, "bytes were wrote")
-			}
-		}
+		cs.Extract(d, path)
 		return nil
 	},
 }
