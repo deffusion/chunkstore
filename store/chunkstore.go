@@ -18,8 +18,7 @@ type ChunkStore struct {
 	logger    *zap.Logger
 }
 
-func New(db kv.KV, chunkRoot string) *ChunkStore {
-	logger, _ := zap.NewProduction()
+func New(db kv.KV, chunkRoot string, logger *zap.Logger) *ChunkStore {
 	return &ChunkStore{
 		db,
 		chunkRoot,
@@ -87,6 +86,7 @@ func (cs *ChunkStore) Add(file *os.File) digest.Digest {
 	return root
 }
 
+// Extract write the file of the given digest to path
 func (cs *ChunkStore) Extract(d digest.Digest, path string) {
 	logger := cs.logger.Named("Extract")
 

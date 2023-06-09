@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/deffusion/chunkstore/digest"
 	"github.com/deffusion/chunkstore/store/kv/memory_kv"
+	"go.uber.org/zap"
 	"log"
 	"os"
 	"testing"
@@ -40,14 +41,16 @@ func get(cs *ChunkStore, d digest.Digest) {
 func TestChunkStore_Add(t *testing.T) {
 	db := memory_kv.New()
 	defer db.Close()
-	cs := New(db, ChunkRoot)
+	logger, _ := zap.NewProduction(nil)
+	cs := New(db, ChunkRoot, logger)
 	add(cs, "../splitter/test.pdf")
 }
 
 func TestChunkStore_Get(t *testing.T) {
 	db := memory_kv.New()
 	defer db.Close()
-	cs := New(db, ChunkRoot)
+	logger, _ := zap.NewProduction(nil)
+	cs := New(db, ChunkRoot, logger)
 	root := add(cs, "D:/book/gopl2.pdf")
 	fmt.Println("added: ", root)
 	//get(cs, root)

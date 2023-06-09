@@ -5,6 +5,7 @@ import (
 	"github.com/deffusion/chunkstore/store"
 	"github.com/deffusion/chunkstore/store/kv/level_kv"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 	"log"
 	"os"
 )
@@ -18,7 +19,8 @@ func main() {
 	if err != nil {
 		log.Fatal("main.app: open leveldb: ", err)
 	}
-	cs := store.New(db, store.ChunkRoot)
+	logger, _ := zap.NewProduction(nil)
+	cs := store.New(db, store.ChunkRoot, logger)
 	defer cs.Close()
 	app.Metadata["chunkstore"] = cs
 
