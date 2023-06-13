@@ -2,6 +2,8 @@ package store
 
 import (
 	"fmt"
+	"github.com/deffusion/chunkstore/digest"
+	"io"
 	"log"
 	"os"
 	"os/user"
@@ -37,4 +39,11 @@ func makeDirIfNotExist(path string) {
 		}
 		fmt.Printf("directory %s was created\n", path)
 	}
+}
+
+type Store interface {
+	io.Closer
+	Get(d digest.Digest) []digest.Digest
+	Add(file *os.File) digest.Digest
+	Extract(d digest.Digest, path string)
 }
