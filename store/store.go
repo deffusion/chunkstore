@@ -44,6 +44,6 @@ func makeDirIfNotExist(path string) {
 type Store interface {
 	io.Closer
 	Get(d digest.Digest) []digest.Digest
-	Add(file *os.File) digest.Digest
+	Add(r io.Reader) digest.Digest
 	Extract(d digest.Digest, path string)
 }
