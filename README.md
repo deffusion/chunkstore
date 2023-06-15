@@ -12,5 +12,5 @@ add a file into chunkstore
 
 extract a file from chunkstore
 ```
-extract [hash] --path [dir][file]
+extract --path [dir][file] [hash]
 ```

@@ -55,10 +55,10 @@ func (cs *ChunkStore) Get(d digest.Digest) []digest.Digest {
 }
 
 // Add the file in the given path into chunkstore
-func (cs *ChunkStore) Add(file *os.File) digest.Digest {
+func (cs *ChunkStore) Add(reader io.Reader) digest.Digest {
 	logger := cs.logger.Named("Add")
 
-	digests, err := splitter.SplitIntoFiles(ChunkRoot, file, digest_hash.SHA256)
+	digests, err := splitter.SplitIntoFiles(ChunkRoot, reader, digest_hash.SHA256)
 	if err != nil {
 		logger.Error(err.Error())
 		return digest.Null
