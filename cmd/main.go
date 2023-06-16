@@ -20,7 +20,7 @@ func main() {
 		log.Fatal("main.app: open leveldb: ", err)
 	}
 	logger, _ := zap.NewProduction()
-	cs := store.New(db, store.ChunkRoot, logger)
+	cs := store.New(db, store.ChunkRoot, logger.Named("main"))
 	defer cs.Close()
 	app.Metadata["chunkstore"] = cs
 
